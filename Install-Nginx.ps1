@@ -2,9 +2,9 @@
     [Parameter(Mandatory=$False)]
     [String]$Version,
     [Parameter(Mandatory=$False)]
-	[String]$DownloadPath,
+  [String]$DownloadPath,
     [Parameter(Mandatory=$False)]
-	[String]$InstallPath = "C:\nginx"
+  [String]$InstallPath = "C:\nginx"
 )
 
 $here = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -14,7 +14,7 @@ $winswDownloadUrl = "http://repo.jenkins-ci.org/releases/com/sun/winsw/winsw/2.1
 
 if(!$DownloadPath)
 {
-	$DownloadPath = $here
+  $DownloadPath = $here
 }
 
 if(!(Test-Path $DownloadPath))
@@ -24,35 +24,35 @@ if(!(Test-Path $DownloadPath))
 
 if(!$Version)
 {
-	$nginxDownloadFile = Get-ChildItem $DownloadPath -Filter nginx-*.zip |
-		Sort-Object Name -Descending | Select-Object -ExpandProperty FullName -First 1
-	if($nginxDownloadFile)
-	{
-		Write-Output "Found nginx package `'$nginxDownloadFile`'"
-	}
-	else
-	{
-		throw "Can not find nginx package as 'nginx-*.zip' in $DownloadPath"
-	}
+  $nginxDownloadFile = Get-ChildItem $DownloadPath -Filter nginx-*.zip |
+    Sort-Object Name -Descending | Select-Object -ExpandProperty FullName -First 1
+  if($nginxDownloadFile)
+  {
+    Write-Output "Found nginx package `'$nginxDownloadFile`'"
+  }
+  else
+  {
+    throw "Can not find nginx package as 'nginx-*.zip' in $DownloadPath"
+  }
 }
 else
 {
-	$nginxDownloadFile = Join-Path $DownloadPath "nginx-${Version}.zip"
-	if(!(Test-Path $nginxDownloadFile))
-	{
-		# downlaod nginx
-		Write-Output "Downloading Nginx from $nginxDownloadUrl to $nginxDownloadFile"
-		Invoke-WebRequest -Uri $nginxDownloadUrl -OutFile $nginxDownloadFile
-	}
+  $nginxDownloadFile = Join-Path $DownloadPath "nginx-${Version}.zip"
+  if(!(Test-Path $nginxDownloadFile))
+  {
+    # downlaod nginx
+    Write-Output "Downloading Nginx from $nginxDownloadUrl to $nginxDownloadFile"
+    Invoke-WebRequest -Uri $nginxDownloadUrl -OutFile $nginxDownloadFile
+  }
 }
 
 New-Item $InstallPath -ItemType Directory -Force | Out-Null
 
 $winswDownloadFile = Get-ChildItem $DownloadPath -Filter winsw-*.exe |
-		Sort-Object Name -Descending | Select-Object -ExpandProperty FullName -First 1
+    Sort-Object Name -Descending | Select-Object -ExpandProperty FullName -First 1
 if($winswDownloadFile)
 {
-	Write-Output "Found winsw package `'$winswDownloadFile`'"
+  Write-Output "Found winsw package `'$winswDownloadFile`'"
 }
 else
 {
@@ -83,9 +83,9 @@ $nginxConf = Join-Path $InstallPath "conf\nginx.conf"
 $backuped = $False
 if(Test-Path $nginxConf)
 {
-	Write-Output "Backing up nginx config to ${nginxConf}.bak..."
-	Copy-Item "$nginxConf" "${nginxConf}.bak" -Force
-	$backuped = $True
+  Write-Output "Backing up nginx config to ${nginxConf}.bak..."
+  Copy-Item "$nginxConf" "${nginxConf}.bak" -Force
+  $backuped = $True
 }
 
 # copy to install path
@@ -96,8 +96,8 @@ Copy-Item "$nginxUnzipedDir\*" "$InstallPath" -Force -Recurse
 # restore nginx config
 if($backuped)
 {
-	Write-Output "Restoring nginx config from ${nginxConf}.bak..."
-	Move-Item "${nginxConf}.bak" "$nginxConf" -Force
+  Write-Output "Restoring nginx config from ${nginxConf}.bak..."
+  Move-Item "${nginxConf}.bak" "$nginxConf" -Force
 }
 
 # remove unzip folder
